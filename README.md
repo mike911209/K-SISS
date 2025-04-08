@@ -1,6 +1,14 @@
 # SSIS: Scalable Serving Inference System
 
 ## About
+This project presents a Kubernetes-based serving system for language models, leveraging NVIDIA
+Multi-Instance GPU (MIG) and Multi-Process Service technology to partition GPU resources into multiple instances. This
+approach enables flexible, fine-grained allocation of GPU slices tailored to the performance demands
+of large language model (LLM) inference, optimizing resource utilization and enhancing throughput. Built on
+Kubernetes, the system supports efficient auto-scaling to respond dynamically to varying workloads,
+ensuring robust resource management adaptability. Additionally, by integrating Hugging Face’s Text Gener-
+ation Inference (TGI) framework, the system offers comprehensive LLM inference services with accelerated
+performance. 
 
 ## Prerequisites
 * A k8s cluster with version > 1.28
