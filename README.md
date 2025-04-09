@@ -11,44 +11,45 @@ ation Inference (TGI) framework, the system offers comprehensive LLM inference s
 performance. 
 
 ## Prerequisites
-* A k8s cluster with version > 1.28
+* A Kubernetes cluster with version > 1.28
 * Nodes with MIG or MPS capable GPUs
 
 ## Getting Start
 
 ### 1. Setup MIG Resources to k8s Cluster
 
-#### Clean Up Exist Environment
+#### Clean Up Existing Environment
 
-1. In Master node, delete existing device plugin if exist 
-2. Login Worker Node
-3. Run `sudo systemctl stop nvidia-persistenced` to stop all persistent process running on the node
-4. Run `sudo systemctl stop nvidia-dcgm` to stop dcgm processes
-5. Use `sudo lsof /dev/nvidia* ` to check if this command has empty output
+1. In Master node, delete existing GPU device plugin if any.
+2. Login to worker node.
+3. Run `sudo systemctl stop nvidia-persistenced` to stop NVIDIA Persistence Daemon running on the node.
+4. Run `sudo systemctl stop nvidia-dcgm` to stop dcgm processes.
+5. Use `sudo lsof /dev/nvidia* ` to check if this command has empty output, which means there are no process running on the device.
 
 #### Partition MIG slice
+
 1. Login to worker node
 2. You can partition GPU slices through the command：
 ```
-sudo nvidia-smi mig -i 0 -cgi <slice 1>,<slice 2>,...  -C
+sudo nvidia-smi mig -i 0 -cgi <slice name 1>,<slice name 2>,...  -C
 ```
 * Valid Slice type are listed below: 
 ```
-| Slice   | SM     | Memory | Cache | Max Count |
-|---------|--------|--------|-------|-----------|
-| 7g.40gb | 7 GPC  | 40 GB  | Full  | 1         |
-| 4g.20gb | 4 GPC  | 20 GB  | 4/8   | 1         |
-| 3g.20gb | 3 GPC  | 20 GB  | 4/8   | 2         |
-| 2g.10gb | 2 GPC  | 10 GB  | 2/8   | 3         |
-| 1g.5gb  | 1 GPC  | 5 GB   | 1/8   | 7         |
+| Slice name |   SM   | Memory | Cache | Max Count |
+|------------|--------|--------|-------|-----------|
+|   7g.40gb  | 7 GPC  | 40 GB  | Full  | 1         |
+|   4g.20gb  | 4 GPC  | 20 GB  | 4/8   | 1         |
+|   3g.20gb  | 3 GPC  | 20 GB  | 4/8   | 2         |
+|   2g.10gb  | 2 GPC  | 10 GB  | 2/8   | 3         |
+|   1g.5gb   | 1 GPC  | 5 GB   | 1/8   | 7         |
 ```
 
 * You can find the valid GPU slice combinations in [here](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/#a100-mig-profiles)
 
 
-#### Set Up MIG device plugin
+#### Set Up MIG device plugin for Kubernetes
 
-* Install NVIDIA gpu-operator device plugin:
+* Install [NVIDIA gpu-operator](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/index.html) device plugin, with the below parameters set:
 ```
 helm install --wait --generate-name \
 -n gpu-operator --create-namespace \
@@ -58,6 +59,7 @@ nvidia/gpu-operator \
 ```
 
 #### Check MIG setup
+* Wait a while for `gpu-operator` to be ready and running.
 * Run `kubectl describe node` and check if the mig resources are set and allocatable
 * ex : 
 ```
@@ -75,11 +77,32 @@ Allocatable:
 
 ```
 
-### 2. Setup SSIS-Dispatcher 
+### 2. Setup SSIS-Dispatcher
 
 #### About
 The SSIS-Dispatcher project is a subproject branched from the SSIS(Scalable Serving Inference System for Language Models with NVIDIA MIG) project. It is a served as a serving manager component in the system. SSIS-Dispatcher is capable of receiving model inference requests and luanching inference pod under [Knative](https://knative.dev/docs/) framework while leveraging GPU sharing features supported my Nvidia [Multi-Instance GPU(MIG)](https://www.nvidia.com/en-us/technologies/multi-instance-gpu/) or [Multi-Process Service (MPS)](https://docs.nvidia.com/deploy/mps/index.html), which allows finegrained unitlization of GPU resources, enhancing system efficiency.
-* Check out the [SSIS project repo](https://github.com/mike911209/KubeComp-MIG), for additional autoscaler or performance monitor support.
+
+#### Project Structure
+```
+Dispatcher/
+├── .github/
+│   └── workflows/           # GitHub Actions workflows (CI/CD)
+├── test/                    # Test files or test data
+├── assigner.go              # Luanching Knative Service and Forwarding Request
+├── config.go                # Dispatcher configurations
+├── configuration.yaml       # YAML kubernetes config file 
+├── Dockerfile               # Docker container specification
+├── go.mod                   # Go module definition
+├── go.sum                   # Go module checksums
+├── LICENSE                  # License information
+├── main.go                  # Entry point of the application
+├── makefile                 # Build, Deploy, and Test automation commands
+├── preprocessor.go          # Request pre-processes customization (default empty)
+├── processor.go             # Main processing logic (covering resource provisioning, resource allocation descision)
+├── README.md                # Subproject documentation
+└── request.go               # Handles request parsing/structs
+
+```
 
 #### Prerequisite
 * Fill three placeholder in `configuration.yaml`, `makefile`, and `config.go`. (Global search "PLACEHOLDER" to find all placeholders)
@@ -106,10 +129,10 @@ nvidia.com/gpu-32gb
 ```
 
 #### 1. Setup Knative and Kourier Ingress/ Load Balancer
-
-* Run `make setup_knative`
-* `k get po -n kourier-system`, check if kourier gateway is running
-* `k get svc -n kourier-system`, check if kourier svc and kourier-internal service is established
+* Make sure you are in the Dispatcher subproject directory
+* Run `make setup_knative` to install knative environment, ingress, and load balancer.
+* `k get po -n kourier-system`, check if kourier gateway is running.
+* `k get svc -n kourier-system`, check if kourier svc and kourier-internal service is established.
 * You can use `curl <kourier service external ip>` to test kourier external gateway or run a pod on cluster that runs `curl http://kourier-internal.kourier-system.svc.cluster.local` to check the in-cluster gateway is operating
 * Use `kn service list` and find the url for the dispatcher, ex: `http://dispatcher.nthulab.192.168.1.10.sslip.io`
 
@@ -129,7 +152,7 @@ nvidia.com/gpu-32gb
 
 #### 5. Send test API request to Dispatcher
 * Export your HuggingFace token : `export HF_TOKEN="<Your token>"`
-* Run `make test`, to send sample inference request 
+* Run `make test`, to send sample inference request to test if dispatcher functions properly
 * (OPTIONAL): if your cluster support external ip , you can try send your request through external ip using this command template:
 ```
 # Assume kourier service external ip is 192.168.1.10
@@ -139,7 +162,7 @@ curl -X POST http://192.168.1.10:80 \
 		-d '{"token":"What is Deep Learning?","par":{"max_new_tokens":20},"env": {"MODEL_ID":"openai-community/gpt2","HF_TOKEN":"$(HF_TOKEN)"}}'
 ```
 #### Uninstalling Dispatcher 
-* Delete all service running
+* Delete all knative service running
 * Run `make clean` to remove dispatcher
 * Run `make remove_knative` to remove knative
 
