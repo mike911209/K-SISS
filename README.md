@@ -10,6 +10,14 @@ ensuring robust resource management adaptability. Additionally, by integrating H
 ation Inference (TGI) framework, the system offers comprehensive LLM inference services with accelerated
 performance. 
 
+### Project Structure
+The project is composed by three major components : Dispatcher, Prometheus Metrics Monitor, and Autoscaler.
+* Dispatcher is reponsible for handling request, launching service pods, and forwarding request to the pod.
+* Autoscaler scales existing running pods by referencing metrics scraped from Prometheus.
+* Prometheus monitors performance metrics for running pods.
+<img width="852" alt="project structure" src="https://github.com/user-attachments/assets/3916ad97-5989-4fe1-9e91-88eb8574836c" />
+
+
 ## Prerequisites
 * A Kubernetes cluster with version > 1.28
 * Nodes with MIG or MPS capable GPUs
