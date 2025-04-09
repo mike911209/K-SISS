@@ -11,7 +11,7 @@ ation Inference (TGI) framework, the system offers comprehensive LLM inference s
 performance. 
 
 ### Project Structure
-The project is composed by three major components : Dispatcher, Prometheus Metrics Monitor, and Autoscaler.
+The project is composed by three major components : Dispatcher(Serving Manager), Prometheus(Metric Scraper), and Autoscaler.
 * Dispatcher is reponsible for handling request, launching service pods, and forwarding request to the pod.
 * Autoscaler scales existing running pods by referencing metrics scraped from Prometheus.
 * Prometheus monitors performance metrics for running pods.
