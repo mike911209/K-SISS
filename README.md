@@ -142,7 +142,6 @@ nvidia.com/gpu-32gb
 * `k get po -n kourier-system`, check if kourier gateway is running.
 * `k get svc -n kourier-system`, check if kourier svc and kourier-internal service is established.
 * You can use `curl <kourier service external ip>` to test kourier external gateway or run a pod on cluster that runs `curl http://kourier-internal.kourier-system.svc.cluster.local` to check the in-cluster gateway is operating
-* Use `kn service list` and find the url for the dispatcher, ex: `http://dispatcher.nthulab.192.168.1.10.sslip.io`
 
 #### 2. Build Your Own Dispatcher Image
 
