@@ -292,7 +292,7 @@ Extend gpuRegistry.go to define new GPU tiers, such as:
 
 #### Send Customize request to Dispatcher
 * Make sure you done all steps above.
-* You can set custom request through modifying `Dispatcher/test/payload.json`	:
+* You can set custom request through modifying `Dispatcher/test/payload.json`(then run `test.py` again):
 ```
 {
     "token": "What is Deep Learning?",
