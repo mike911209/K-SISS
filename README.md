@@ -167,7 +167,7 @@ nvidia.com/gpu-32gb
 * Run `make clean` to remove dispatcher
 * Run `make remove_knative` to remove knative
 
-### 2. Setup Autoascaler and Prometheus 
+### 2. Setup Autoascaler
 
 #### About
 
@@ -182,6 +182,8 @@ It adjusts GPU resource tiers (MIG, MPS, or full GPU) dynamically based on appli
 
 #### Build & Run
 > Make sure to configure the `makefile` for your Docker or GitHub container registry.
+
+**Please run the following command under `Autoscaler` directory.**
 
 Build your image:
 ```
@@ -287,8 +289,29 @@ Extend gpuRegistry.go to define new GPU tiers, such as:
 - MIG configuration
 - MPS virtual slices
 
+### 3. Setup Prometheus and Prometheus support
+#### Install prometheus
+Check prometheus have beeb installed in k8s cluster.
 
-### 3. Send Request to SSIS
+#### Install SSIS Promsupp (Prometheus support)
+**Please run the following command under `Promsupp` directory**
+
+Promsupp is an SSIS subproject that connects Prometheus with SSIS applications by creating Services and ServiceMonitors for metric scraping.
+
+Build your image:
+```
+make build
+```
+
+Edit configuration.yaml to match your environment (e.g., namespace).
+
+Deploy into you k8s cluster:
+```
+make deploy
+```
+>  This will use configuration.yaml to deploy the autoscaler
+
+### 4. Send Request to SSIS
 
 #### Send Customize request to Dispatcher
 * Make sure you done all steps above.
