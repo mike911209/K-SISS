@@ -286,6 +286,9 @@ Extend gpuRegistry.go to define new GPU tiers, such as:
 #### Install prometheus
 Check prometheus have been installed in k8s cluster.
 
+#### Gafana Dashboard
+The grafana dashboard for visualize scaling progress is under `Prometheus` directory.
+
 #### Install SISS Promsupp (Prometheus support)
 **Please run the following command under `Promsupp` directory**
 
