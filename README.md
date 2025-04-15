@@ -6,8 +6,7 @@ Multi-Instance GPU (MIG) and Multi-Process Service technology to partition GPU r
 approach enables flexible, fine-grained allocation of GPU slices tailored to the performance demands
 of large language model (LLM) inference, optimizing resource utilization and enhancing throughput. Built on
 Kubernetes, the system supports efficient auto-scaling to respond dynamically to varying workloads,
-ensuring robust resource management adaptability. Additionally, by integrating Hugging Face’s Text Gener-
-ation Inference (TGI) framework, the system offers comprehensive LLM inference services with accelerated
+ensuring robust resource management adaptability. Additionally, by integrating Hugging Face’s Text Generation Inference (TGI) framework, the system offers comprehensive LLM inference services with accelerated
 performance. 
 
 ### Project Structure
@@ -165,7 +164,7 @@ nvidia.com/gpu-32gb
 #### Uninstalling Dispatcher 
 * Delete all knative service running
 * Run `make clean` to remove dispatcher
-* Run `make remove_knative` to remove knative
+* Run `make remove_knative` to remove knative environment, ingress, and load balancer.
 
 ### 2. Setup Autoascaler
 
