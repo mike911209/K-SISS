@@ -1,13 +1,7 @@
-# SSIS: Scalable Serving Inference System
+# K-SISS: Kubernetes Scalable Inference Serving System
 
 ## About
-This project presents a Kubernetes-based serving system for language models, leveraging NVIDIA
-Multi-Instance GPU (MIG) and Multi-Process Service technology to partition GPU resources into multiple instances. This
-approach enables flexible, fine-grained allocation of GPU slices tailored to the performance demands
-of large language model (LLM) inference, optimizing resource utilization and enhancing throughput. Built on
-Kubernetes, the system supports efficient auto-scaling to respond dynamically to varying workloads,
-ensuring robust resource management adaptability. Additionally, by integrating Hugging Face’s Text Generation Inference (TGI) framework, the system offers comprehensive LLM inference services with accelerated
-performance. 
+This project presents a Kubernetes-based serving system for language models, leveraging NVIDIA Multi-Instance GPU (MIG) and Multi-Process Service technology to partition GPU resources into multiple instances. This approach enables flexible, fine-grained allocation of GPU slices tailored to the performance demands of large language model (LLM) inference, optimizing resource utilization and enhancing throughput. Built on Kubernetes, the system supports efficient auto-scaling to respond dynamically to varying workloads, ensuring robust resource management adaptability. Additionally, by integrating Hugging Face’s Text Gener- ation Inference (TGI) framework, the system offers comprehensive LLM inference services with accelerated performance. 
 
 ### Project Structure
 The project is composed by three major components : Dispatcher(Serving Manager), Prometheus(Metric Scraper), and Autoscaler.
@@ -84,10 +78,10 @@ Allocatable:
 
 ```
 
-### 2. Setup SSIS-Dispatcher
+### 2. Setup SISS-Dispatcher
 
 #### About
-The SSIS-Dispatcher project is a subproject branched from the SSIS(Scalable Serving Inference System for Language Models with NVIDIA MIG) project. It is a served as a serving manager component in the system. SSIS-Dispatcher is capable of receiving model inference requests and luanching inference pod under [Knative](https://knative.dev/docs/) framework while leveraging GPU sharing features supported my Nvidia [Multi-Instance GPU(MIG)](https://www.nvidia.com/en-us/technologies/multi-instance-gpu/) or [Multi-Process Service (MPS)](https://docs.nvidia.com/deploy/mps/index.html), which allows finegrained unitlization of GPU resources, enhancing system efficiency.
+The SISS-Dispatcher project is a subproject branched from the SISS(Scalable Inference Serving System for Language Models with NVIDIA MIG) project. It is a served as a serving manager component in the system. SISS-Dispatcher is capable of receiving model inference requests and luanching inference pod under [Knative](https://knative.dev/docs/) framework while leveraging GPU sharing features supported my Nvidia [Multi-Instance GPU(MIG)](https://www.nvidia.com/en-us/technologies/multi-instance-gpu/) or [Multi-Process Service (MPS)](https://docs.nvidia.com/deploy/mps/index.html), which allows finegrained unitlization of GPU resources, enhancing system efficiency.
 
 #### Project Structure
 ```
@@ -292,10 +286,10 @@ Extend gpuRegistry.go to define new GPU tiers, such as:
 #### Install prometheus
 Check prometheus have beeb installed in k8s cluster.
 
-#### Install SSIS Promsupp (Prometheus support)
+#### Install SISS Promsupp (Prometheus support)
 **Please run the following command under `Promsupp` directory**
 
-Promsupp is an SSIS subproject that connects Prometheus with SSIS applications by creating Services and ServiceMonitors for metric scraping.
+Promsupp is an SISS subproject that connects Prometheus with SISS applications by creating Services and ServiceMonitors for metric scraping.
 
 Build your image:
 ```
@@ -310,7 +304,7 @@ make deploy
 ```
 >  This will use configuration.yaml to deploy the autoscaler
 
-### 4. Send Request to SSIS
+### 4. Send Request to SISS
 
 #### Send Customize request to Dispatcher
 * Make sure you done all steps above.
