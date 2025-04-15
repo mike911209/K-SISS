@@ -284,7 +284,7 @@ Extend gpuRegistry.go to define new GPU tiers, such as:
 
 ### 3. Setup Prometheus and Prometheus support
 #### Install prometheus
-Check prometheus have beeb installed in k8s cluster.
+Check prometheus have been installed in k8s cluster.
 
 #### Install SISS Promsupp (Prometheus support)
 **Please run the following command under `Promsupp` directory**
